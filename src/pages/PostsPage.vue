@@ -15,7 +15,7 @@
                 Добавить пост
             </Button>
         </div>
-        <div class="switch">
+        <div class="switch" v-if="user.state == 'user'">
             <i-switch size="large" v-model="toggle" @on-change="switchToggle">
                 <span slot="open">ON</span>
                 <span slot="close">OFF</span>

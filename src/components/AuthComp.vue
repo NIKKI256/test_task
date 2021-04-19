@@ -2,30 +2,83 @@
     <div class="container">
         <h1 class="uiFont">{{reg_log ? 'Войти в систему' : 'Регистрация нового пользователя'}}</h1>
         <form>
+            <div v-if="reg_log">
+                <div class="block-field">
+                    <div class="input-data">
+                        <div class="p-block">
+                            <p class="uiFont">Введите свой логин:</p>
+                            <p class="uiFont err-class"
+                                v-if="$v.form.name.$dirty && !$v.form.name.required">
+                                Это обязательное поле!
+                            </p>
+                        </div>
+                        <div class="input-block">
+                            <Input type="text" v-model.trim="$v.form.name.$model"/>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="block-field">
+                    <div class="input-data">
+                        <div class="p-block">
+                            <p class="uiFont">Введите свой email:</p>
+                            <p class="uiFont err-class"
+                                v-if="$v.form.email.$dirty && !$v.form.email.required">
+                                Это обязательное поле!
+                            </p>
+                            <p class="uiFont err-class"
+                                v-if="$v.form.email.$dirty && !$v.form.email.email">
+                                Это поле для эл.почты!
+                            </p>
+                        </div>
+                        <div class="input-block">
+                            <Input type="text" v-model.trim="$v.form.email.$model"/>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="block-field">
+                    <div class="input-data">
+                        <div class="p-block">
+                            <p class="uiFont">Введите свой пароль:</p>
+                            <p class="uiFont err-class" 
+                                v-if="$v.form.password.$dirty && !$v.form.password.required">
+                                Это обязательное поле!
+                            </p>
+                            <p class="uiFont err-class" 
+                                v-if="$v.form.password.$dirty && !$v.form.password.minLength">
+                                Не менее 5ти символов!
+                            </p>
+                        </div>
+                        <div class="input-block">
+                            <Input type="password" v-model.trim="$v.form.password.$model"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <table v-if="!reg_log">
                 <tr>
-                    <td><p class="uiFont">Введите свой логин:</p></td>
-                    <td><Input type="text" v-model.trim="form.name"/></td>
-                </tr>
-                <tr>
                     <td><p class="uiFont">Введите свой email:</p></td>
-                    <td><Input type="email" v-model.trim="form.email"/></td>
+                    <td><Input type="email" v-model.trim="$v.form.email.$model"/></td>
                 </tr>
-                <tr>
-                    <td><p class="uiFont">Введите свой пароль:</p></td>
-                    <td><Input type="password" v-model.trim="form.password"/></td>
+                <tr v-if="$v.form.email.$dirty && !$v.form.email.required">
+                    <p class="uiFont err-class">Это обязательное поле!</p>
                 </tr>
-            </table>
+                <tr v-if="$v.form.email.$dirty && !$v.form.email.email">
+                    <p class="uiFont err-class">Это поле для эл.почты!</p>
+                </tr>
 
-            <table v-if="reg_log">
-                <tr>
-                    <td><p class="uiFont">Введите свой email:</p></td>
-                    <td><Input type="email" v-model.trim="form.email"/></td>
-                </tr>
                 <tr>
                     <td><p class="uiFont">Введите свой пароль:</p></td>
-                    <td><Input type="password" v-model.trim="form.password"/></td>
+                    <td><Input type="password" v-model.trim="$v.form.password.$model"/></td>
                 </tr>
+                <tr v-if="$v.form.password.$dirty && !$v.form.password.required">
+                    <p class="uiFont err-class">Это обязательное поле!</p>
+                </tr>
+                <tr v-if="$v.form.password.$dirty && !$v.form.password.minLength">
+                    <p class="uiFont err-class">Не менее 5ти символов!</p>
+                </tr>
+
             </table>
 
             <div class="buttons">
@@ -40,15 +93,29 @@
 </template>
 
 <script>
+import {validationMixin} from 'vuelidate'
+import {required , email , minLength} from 'vuelidate/lib/validators'
+
 export default {
+    mixins:[validationMixin],
     data(){
         return{
             form:{
+                name:'',
                 email:'',
-                password:'',
-                name:''
+                password:''
             },
             reg_log:true
+        }
+    },
+    validations:{
+        form:{
+            name:{required},
+            email:{required, email},
+            password:{
+                required,
+                minLength:minLength(5)
+            }
         }
     },
     methods:{
@@ -118,9 +185,15 @@ export default {
 
 <style scoped>
 
-    table{
-        width: 100%;
-        text-align: left;
+    .input-data{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .input-data > .p-block , .input-block{
+        flex: 1 1;
+        text-align:left;
     }
 
     .container{
@@ -139,8 +212,8 @@ export default {
         margin-top: 2%;
     }
 
-    .invalidField{
-        border-radius: 5px;
-        border: 1px solid red;
+    .err-class{
+        color: red;
     }
+
 </style>

@@ -9,29 +9,32 @@
                 <input name="file" type="file" ref="file" id="field__file-2" class="field field__file" 
                     @change="putAvatar(userInfo._id)">
 
-                <label class="field__file-wrapper" for="field__file-2">
-                    <div class="field__file-button">Выбрать аватар</div>
-                </label>
+                <DragDrop @upload_avatar="upload_avatar"/>
             </div>
         </div>
         <div class="content">
-            <img class="user-avatar" :src="userInfo.avatar">
+            <img v-if="noAvatar" class="user-avatar" :src="userInfo.avatar">
+            <img v-else class="user-avatar" :src="userInfo.avatar">
             <h2>Логин: {{userInfo.name}}</h2>
             <h2>Email: {{userInfo.email}}</h2>
             <h2>Дата создания: {{userInfo.dateCreated}}</h2>
 
             <Button class="btn" type="error" @click="deleteUser(userInfo._id)">
-                Delete my page
+                Удалить мой аккаунт
             </Button>
         </div>
     </div>
 </template>
 
 <script>
+import DragDrop from './DragDrop'
+
 export default {
     data(){
         return{
-            avatar:null
+            avatar:null,
+            noAvatar:true,
+            mouseClass:false
         }
     },
     props:{
@@ -40,12 +43,21 @@ export default {
             default:() => {}
         }
     },
+    components:{
+        DragDrop
+    },
     methods:{
-        async putAvatar(id){
-            this.infoAvatar = this.$refs.file.files[0]
-            const fd = new FormData()
-            fd.append("avatar",this.infoAvatar)
+        async deleteUser(id){
+            await this.$ApiUsers.users.deleteUser(id)
+            this.$router.push('/')
+        },
+        async upload_avatar(avatar){
+            const id = this.userInfo._id
+            this.infoAvatar = avatar
 
+            const fd = new FormData()
+            fd.append("avatar",avatar)
+            
             try {
                 await this.$ApiUsers.users.uploadAvatar({payload:fd,id})
                 this.$router.go(0)
@@ -53,21 +65,30 @@ export default {
                 alert('Что-то пошло не так')
                 console.error(error);
             }
-        },
-        async deleteUser(id){
-            await this.$ApiUsers.users.deleteUser(id)
-            this.$router.push('/')
         }
     },
     created(){
         const address = this.userInfo.avatar
-        const base_url = 'https://nodejs-test-api-blog.herokuapp.com'
-        this.userInfo.avatar = base_url + address
+        const base_url = process.env.VUE_APP_URL
+        const img_no_user = "https://www.uclg-planning.org/sites/default/files/styles/featured_home_left/public/no-user-image-square.jpg?itok=PANMBJF-"
+        try {
+            if(address != undefined){
+                this.userInfo.avatar = base_url + address
+                this.noAvatar = false
+            }else{
+                this.userInfo.avatar = img_no_user
+            }
+        } catch (error) {
+            this.userInfo.avatar = img_no_user
+            alert('Что-то пошло не так')
+            console.log(error);
+        }
     }
 }
 </script>
 
 <style scoped>
+
     .content{
         background-color: #f8f8f9;
         width: 30%;
@@ -104,25 +125,21 @@ export default {
         height: 60px;
         background: #1bbc9b;
         color: #fff;
-        font-size: 1.125rem;
-        font-weight: 700;
-        display: -webkit-box;
-        display: -ms-flexbox;
         display: flex;
-        -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
-        -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
-        border-radius: 0 3px 3px 0;
+        align-items: center;
+        justify-content: center;
+        border-radius: 5px;
         cursor: pointer;
+        transition: 0.5s;
+    }
+    
+    .field__file-button:hover{
+        background: #159078;
     }
 
     .user-avatar{
         min-width: 150px;
         min-height: 150px;
-
         max-width: 150px;
         max-height: 150px;
     }

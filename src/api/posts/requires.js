@@ -10,7 +10,7 @@ export default function(instance){
             return instance.delete(`posts/${id}`)
         },
         filterPosts(id){
-            return instance.get(`https://nodejs-test-api-blog.herokuapp.com/api/v1/posts?postedBy=${id}`)
+            return instance.get(`posts?postedBy=${id}`)
         }
     }
 }
