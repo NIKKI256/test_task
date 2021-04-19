@@ -1,8 +1,8 @@
 <template>
     <div class="container">
         <h1 class="uiFont">{{reg_log ? 'Войти в систему' : 'Регистрация нового пользователя'}}</h1>
-        <form>
-            <div v-if="reg_log">
+        <form class="auth-window">
+            <div v-if="!reg_log">
                 <div class="block-field">
                     <div class="input-data">
                         <div class="p-block">
@@ -56,37 +56,63 @@
                     </div>
                 </div>
             </div>
-            <table v-if="!reg_log">
-                <tr>
-                    <td><p class="uiFont">Введите свой email:</p></td>
-                    <td><Input type="email" v-model.trim="$v.form.email.$model"/></td>
-                </tr>
-                <tr v-if="$v.form.email.$dirty && !$v.form.email.required">
-                    <p class="uiFont err-class">Это обязательное поле!</p>
-                </tr>
-                <tr v-if="$v.form.email.$dirty && !$v.form.email.email">
-                    <p class="uiFont err-class">Это поле для эл.почты!</p>
-                </tr>
 
-                <tr>
-                    <td><p class="uiFont">Введите свой пароль:</p></td>
-                    <td><Input type="password" v-model.trim="$v.form.password.$model"/></td>
-                </tr>
-                <tr v-if="$v.form.password.$dirty && !$v.form.password.required">
-                    <p class="uiFont err-class">Это обязательное поле!</p>
-                </tr>
-                <tr v-if="$v.form.password.$dirty && !$v.form.password.minLength">
-                    <p class="uiFont err-class">Не менее 5ти символов!</p>
-                </tr>
 
-            </table>
+            <div v-if="reg_log">
+                <div class="block-field">
+                    <div class="input-data">
+                        <div class="p-block">
+                            <p class="uiFont">Введите свой email:</p>
+                            <p class="uiFont err-class"
+                                v-if="$v.form.email.$dirty && !$v.form.email.required">
+                                Это обязательное поле!
+                            </p>
+                            <p class="uiFont err-class"
+                                v-if="$v.form.email.$dirty && !$v.form.email.email">
+                                Это поле для эл.почты!
+                            </p>
+                        </div>
+                        <div class="input-block">
+                            <Input type="text" v-model.trim="$v.form.email.$model"/>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="block-field">
+                    <div class="input-data">
+                        <div class="p-block">
+                            <p class="uiFont">Введите свой пароль:</p>
+                            <p class="uiFont err-class" 
+                                v-if="$v.form.password.$dirty && !$v.form.password.required">
+                                Это обязательное поле!
+                            </p>
+                            <p class="uiFont err-class" 
+                                v-if="$v.form.password.$dirty && !$v.form.password.minLength">
+                                Не менее 5ти символов!
+                            </p>
+                        </div>
+                        <div class="input-block">
+                            <Input type="password" v-model.trim="$v.form.password.$model"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="buttons">
-                <Button type="success" long v-if="reg_log" @click="login">Войти в систему</Button>
-                <Button type="success" long v-if="!reg_log" @click="register">Зарегистрироваться</Button>
+                <Button type="success" long v-if="reg_log" @click="login">
+                    Войти в систему
+                </Button>
+                <Button type="success" long v-if="!reg_log" @click="register">
+                    Зарегистрироваться
+                </Button>
 
-                <Button type="info" long @click="changeChoose" class="btnMt">{{reg_log ? 'Создать аккаунт' : 'Уже есть аккаунт'}}</Button>
-                <Button type="warning" long class="btnMt" @click="guestEnter">Войти как гость</Button>
+                <Button type="info" long @click="changeChoose" class="btnMt">
+                    {{reg_log ? 'Создать аккаунт' : 'Уже есть аккаунт'}}
+                </Button>
+
+                <Button type="warning" long class="btnMt" @click="guestEnter">
+                    Войти как гость
+                </Button>
             </div>
         </form>
     </div>
@@ -110,8 +136,13 @@ export default {
     },
     validations:{
         form:{
-            name:{required},
-            email:{required, email},
+            name:{
+                required
+            },
+            email:{
+                required, 
+                email
+            },
             password:{
                 required,
                 minLength:minLength(5)
@@ -187,21 +218,46 @@ export default {
 
     .input-data{
         display: flex;
-        justify-content: center;
-        align-items: center;
+        justify-content: space-between;
+        align-items: top;
     }
 
-    .input-data > .p-block , .input-block{
-        flex: 1 1;
-        text-align:left;
+    .auth-window{
+        margin-top: 15px;
+        width: 445px;
     }
 
     .container{
         margin: auto;
+        padding: 20px;
         width: 30%;
+
         display: flex;
         flex-direction: column;
         align-items: center;
+
+        background: #f8f8f9 ;
+        border-radius: 5px;
+
+        transition: 1s;
+    }
+
+    .block-field{
+        min-height: 50px;
+        font-size: 16px;
+    }
+
+    .p-block{
+        text-align: left;
+    }
+
+    .input-block{
+        min-width: 200px;
+        text-align: left;
+    }
+
+    .container:hover{
+        background: #e8eaec ;
     }
 
     .uiFont{
