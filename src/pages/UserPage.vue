@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h1>Ваши данные</h1>
+        <h1>Your info</h1>
         <Loader v-if="isLoaderVisible"/>
         <InfoUser
             v-else
@@ -35,7 +35,7 @@ export default {
             this.isLoaderVisible = false
         } catch (error) {
             this.$Loading.error();
-            alert('Что-то пошло не так')
+            alert('Something is wrong')
             console.error(error);
         }
     }

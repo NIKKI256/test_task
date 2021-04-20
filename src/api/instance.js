@@ -17,7 +17,7 @@ instance.interceptors.request.use(config => {
     }
     return config
 }, err => {
-    alert('Что-то пошло не так')
+    alert('Something is wrong')
     return Promise.reject(err)
 })
 
