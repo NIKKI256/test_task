@@ -2,7 +2,7 @@
   <div>
     <Loader v-if="posts.length == 0" />
     <div v-else>
-      <div v-for="post in posts" :key="post._id" class="post">
+      <div v-for="post in posts" :key="post._id" class="post mt-2">
         <h2 class="font-weight-medium">{{ post.title }}</h2>
         <h3 class="font-weight-medium">{{ post.description }}</h3>
         <div class="btns">
@@ -41,7 +41,7 @@
             class="mt-1"
             color="warning"
             v-if="checkUser == 'user' && post.postedBy == user_id"
-            @click="deletePost(post._id)"
+            @click="openModal(post._id)"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -59,19 +59,25 @@
           </v-btn>
         </div>
       </div>
+      <ModalEdit v-if="isVisibleModal" @close="close" @edit="edit" :post_id="prop_id"/>
     </div>
   </div>
 </template>
 
 <script>
 import Loader from "./Loader";
+import ModalEdit from "./ModalEdit";
 
 export default {
   data() {
-    return {};
+    return {
+      isVisibleModal: false,
+      prop_id:null
+    };
   },
   components: {
     Loader,
+    ModalEdit,
   },
   props: {
     posts: {
@@ -88,19 +94,31 @@ export default {
     },
   },
   methods: {
+    close(){
+      this.isVisibleModal = false
+    },
     deletePost(id) {
       this.$emit("deletePost", id);
     },
+    openModal(id) {
+      this.isVisibleModal = true;
+      this.prop_id = id
+    },
+    async edit(post){
+      const updatePost = {
+        title:post.title,
+        fullText:post.fullText,
+        description:post.description
+      }
+      await this.$ApiPosts.posts.updatePostById({payload:updatePost,id:post._id})
+      this.$router.go(0)
+    }
   },
 };
 </script>
 
 <style scoped>
-.post:first-child {
-  margin-top: 0;
-}
 .post {
-  margin-top: 8px;
   border-radius: 5px;
   border: solid 1px #64b5f6;
   background: #bbdefb;

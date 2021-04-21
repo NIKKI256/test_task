@@ -24,17 +24,13 @@ export default {
         InfoUser,Loader
     },
     async created(){
-        try {
-            this.$Loading.start();
-            
+        try {            
             const userData = await this.$ApiUsers.users.getUserData()
 
             this.userInfo = userData.data
 
-            this.$Loading.finish();
             this.isLoaderVisible = false
         } catch (error) {
-            this.$Loading.error();
             alert('Something is wrong')
             console.error(error);
         }

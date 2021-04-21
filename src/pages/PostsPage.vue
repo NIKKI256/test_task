@@ -18,7 +18,9 @@
           />
           <path d="M9 9a1 1 0 1 0 2 0 1 1 0 0 0-2 0z" />
         </svg>
-        <span class="ml-1">Logout</span>
+        <span class="ml-1">
+          {{ user.state == "user" ? "Logout" : "Authorization window" }}
+        </span>
       </v-btn>
 
       <v-btn
@@ -69,22 +71,23 @@
         <span class="ml-1">Add post</span>
       </v-btn>
     </div>
-    <div class="switch mt-1" v-if="user.state == 'user'">
+    <div class="switch mt-2" v-if="user.state == 'user'">
       <v-switch v-model="toggle" inset @change="switchToggle"></v-switch>
       <h3 class="switch-text">Only my posts</h3>
     </div>
     <AllPosts
+      class="mt-2"
       :posts="posts"
       :checkUser="user.state"
       :user_id="user_id"
       @deletePost="deletePost"
     />
-    <Modal v-if="isModalVis" @close="close" @addPost="addPost" />
+    <ModalAdd v-if="isModalVis" @close="close" @addPost="addPost" />
   </div>
 </template>
 
 <script>
-import Modal from "../components/Modal";
+import ModalAdd from "../components/ModalAdd";
 import AllPosts from "../components/AllPosts";
 
 export default {
@@ -101,7 +104,7 @@ export default {
   },
   components: {
     AllPosts,
-    Modal,
+    ModalAdd,
   },
   methods: {
     exit() {
@@ -160,7 +163,6 @@ export default {
         const userData = (await this.$ApiUsers.users.getUserData()).data;
         this.user_id = userData._id;
       } catch (error) {
-        alert("Something is wrong");
         console.log(error);
       }
     }

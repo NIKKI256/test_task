@@ -11,6 +11,12 @@ export default function(instance){
         },
         filterPosts(id){
             return instance.get(`posts?postedBy=${id}`)
+        },
+        getPostById(id){
+            return instance.get(`posts/${id}`)
+        },
+        updatePostById({payload,id}){
+            return instance.patch(`posts/${id}`,payload)
         }
     }
 }

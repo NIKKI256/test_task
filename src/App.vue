@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <v-app>
+    <v-app class="main-class">
       <router-view></router-view>
     </v-app>
   </div>
@@ -19,11 +19,14 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 
 .v-application--wrap {
   min-height: 1vh !important;
   display: block;
+}
+
+.main-class{
+  margin-top: 2%;
 }
 </style>
